@@ -1,8 +1,8 @@
-function Td = connectDOFs(n_el,n_nod,n_i,Tn)
+function Td = connectDOFs(n_el,n_ne,n_i,Tn)
 %--------------------------------------------------------------------------
 % The function takes as inputs:
 %   - Dimensions:  n_el     Total number of elements
-%                  n_nod    Number of nodes per element
+%                  n_ne    Number of nodes per element
 %                  n_i      Number of DOFs per node
 %   - Tn    Nodal connectivities table [n_el x n_nod]
 %            Tn(e,a) - Nodal number associated to node a of element e
@@ -12,7 +12,7 @@ function Td = connectDOFs(n_el,n_nod,n_i,Tn)
 %            Td(e,i) - DOF i associated to element e
 %--------------------------------------------------------------------------
 % Hint: Use the relation between the DOFs numbering and nodal numbering.
-Td = zeros(n_el, n_i*n_nod);
+Td = zeros(n_el, n_i*n_ne);
 
 for i=1:n_el
     Td(i,:) = [Tn(i,1)*2-1 Tn(i,1)*2 Tn(i,2)*2-1 Tn(i,2)*2];

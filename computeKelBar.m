@@ -1,4 +1,4 @@
-function Kel = computeKelBar(n_d,n_el,x,Tn,mat,Tmat)
+function [Kel, l_e_vector] = computeKelBar(n_i,n_el,x,Tn,E, Iz)
 %--------------------------------------------------------------------------
 % The function takes as inputs:
 %   - Dimensions:  n_d        Problem's dimensions
@@ -17,22 +17,20 @@ function Kel = computeKelBar(n_d,n_el,x,Tn,mat,Tmat)
 %   - Kel   Elemental stiffness matrices [n_el_dof x n_el_dof x n_el]
 %            Kel(i,j,e) - Term in (i,j) position of stiffness matrix for element e
 %--------------------------------------------------------------------------
-Kel = zeros(2*n_d, 2*n_d, n_el);
+Kel = zeros(2*n_i, 2*n_i, n_el);
+l_e_vector = zeros(n_el,1);
 
 for i=1:n_el
-    x_1_e= x(Tn(i,1),1);
-    x_2_e= x(Tn(i,2),1);
-    y_1_e= x(Tn(i,1),2);
-    y_2_e= x(Tn(i,2),2);
-    l_e= sqrt((x_2_e-x_1_e)^2+(y_2_e-y_1_e)^2);
-    s_e=(y_2_e-y_1_e)/l_e;
-    c_e=(x_2_e-x_1_e)/l_e;
-    mat_aux = [c_e^2 c_e*s_e -(c_e)^2 -c_e*s_e;
-        c_e*s_e (s_e)^2 -c_e*s_e -(s_e)^2;
-        -(c_e)^2 -c_e*s_e (c_e)^2 c_e*s_e;
-        -c_e*s_e -(s_e)^2 c_e*s_e (s_e)^2;
+    x_1_e= x(1,Tn(i,1));
+    x_2_e= x(1,Tn(i,2));
+    l_e= x_2_e-x_1_e;
+    mat_aux = [12 6*l_e -12 6*l_e;
+        6*l_e 4*l_e^2 -6*l_e 2*l_e^2
+        -12 -6*l_e 12 -6*l_e;
+        6*l_e 2*l_e^2 -6*l_e 4*l_e^2
         ];
-    Kel(:,:,i)=Tmat(i, 2)*Tmat(i, 1)/l_e * mat_aux;
+    Kel(:,:,i)=Iz*E/(l_e^3) * mat_aux;
+    l_e_vector(i,1) = l_e;
 end
 
 

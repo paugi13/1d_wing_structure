@@ -32,6 +32,13 @@ M = 35000;
 % Number of elements for each part
 nel = [3,6];
 Nel = 96; % Number of elements for the "exact" solution
+n_d = 1;    %Problem dimension
+n_nod = Nel+1;  %Total number of nodes.
+n_ne = 2;   % Nodes in a beam
+n_i = 2;    % DOF per node.
+n_dof = n_nod*n_i;  %Total number of degrees of freedom.
+
+x = 0:L/Nel:L;
 
 %% PRECOMPUTATIONS
 
@@ -58,7 +65,26 @@ Iz = Izz1 + Izz2 + Izz3;
 % l - Equilibrium parameter
 
 % Plot analytical solution
-fig = plotBeamsInitialize(L1+L2);
+% fig = plotBeamsInitialize(L1+L2);
+
+% Compute Tn = 
+Tn = zeros(Nel, n_ne);
+for i = 1:Nel
+    Tn(i,:) = [i, i+1];
+end
+
+% Compute Td: Only 2 degrees of freedom per node (deflection and rotation).
+Td = connectDOFs(Nel,n_ne,n_i,Tn);
+
+% Independent element stiffness matrix
+[Kel, l_e_vector] = computeKelBar(n_i,Nel,x,Tn,E, Iz);
+
+% Element force vector
+F_el = computeElementForceVector(n_i, Nel, x, l_e_vector, L1, L2, l, M);
+
+% Global matrix
+[KG, Fext] = assemblyKG(n_el,n_el_dof,n_dof,Td,Kel, F_el);
+
 
 % Loop through each of the number of elements
 for k = 1:length(nel)
