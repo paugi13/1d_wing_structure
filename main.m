@@ -31,6 +31,9 @@ M = 35000;
 
 % Number of elements for each part
 nel = [3,6];
+
+%%  Essential parameters. 
+% Everything is built so that it works by changing Nel's value. 
 Nel = 96; % Number of elements for the "exact" solution
 n_d = 1;    %Problem dimension
 n_nod = Nel+1;  %Total number of nodes.
@@ -39,6 +42,12 @@ n_i = 2;    % DOF per node.
 n_dof = n_nod*n_i;  %Total number of degrees of freedom.
 
 x = 0:L/Nel:L;
+
+% Fixed degrees of freedom
+% First node can't move upwards or rotate.
+fixNod = [1 1 0;
+    1 2 0;
+];
 
 %% PRECOMPUTATIONS
 
@@ -63,9 +72,11 @@ Iz = Izz1 + Izz2 + Izz3;
 
 % Compute parameter l:
 % l - Equilibrium parameter
+aux_M = 21875; %[kg]
+aux_Q = 32/3; %[N]
+l = (aux_M*g)/aux_Q;
 
-% Plot analytical solution
-% fig = plotBeamsInitialize(L1+L2);
+
  %% PREPROCESS
     
     % Nodal coordinates
@@ -107,10 +118,10 @@ Td = connectDOFs(Nel,n_ne,n_i,Tn);
 [Kel, l_e_vector] = computeKelBar(n_i,Nel,x,Tn,E, Iz);
 
 % Element force vector
-F_el = computeElementForceVector(n_i, Nel, x, l_e_vector, L1, L2, l, M);
+F_el = computeElementForceVector(n_i, n_nod, Nel, x, l_e_vector, L1, L2, l, M);
 
 % Global matrix
-[KG, Fext] = assemblyKG(n_el,n_el_dof,n_dof,Td,Kel, F_el);
+[KG, Fext] = assemblyKG(Nel,n_ne*n_i,n_dof,Td,Kel, F_el);
 
 % Apply conditions 
 [vL,vR,uR] = applyCond(n_i,n_dof,fixNod);
@@ -121,20 +132,21 @@ F_el = computeElementForceVector(n_i, Nel, x, l_e_vector, L1, L2, l, M);
 %Internal distributions
 [Fy, Mz, pu, pt] = computeInternalDistributions(l_e_vector,u, Nel, n_ne, n_i, Td, Kel);
 
-% Loop through each of the number of elements
-for k = 1:length(nel)
 
-   
-       
-    
-    %% POSTPROCESS
-    
-    % Number of subdivisions and plots
+
+
+%% POSTPROCESS
+
+% Plot analytical solution
+fig = plotBeamsInitialize(L1+L2);
+
+% Number of subdivisions and plots
     nsub = Nel/nel(k);
     plotBeams1D(fig,x,Tnod,nsub,pu,pt,Fy,Mz)
     drawnow;
     
-end
+% for k = 1:length(nel)
+% end
 
 % Add figure legends
 figure(fig)

@@ -7,7 +7,7 @@ coeff_u = zeros(Nel, 4);
 coeff_m = zeros(Nel, 3);
 
 for e = 1:Nel
-u_e = zeros(n_ne*ni,1);
+u_e = zeros(n_ne*n_i,1);
 
     for i = 1:n_ne*n_i
         I = Td(e,i);
@@ -22,8 +22,8 @@ u_e = zeros(n_ne*ni,1);
     ord3_matrix =   [2 l_e_vector(e,1) -2 l_e_vector(e,1);
         -3*l_e_vector(e,1) -2*l_e_vector(e,1)^2 3*l_e_vector(e,1) -l_e_vector(e,1)^2;
         0 l_e_vector(e,1)^3 0 0;
-        l_e_vector(e,1)^3];
-    pol_coeff = (1/l_e_vector^3)*ord3_matrix*u_e;
+        l_e_vector(e,1)^3 0 0 0];
+    pol_coeff = (1/l_e_vector(e,1)^3)*ord3_matrix*u_e;
     coeff_u(e, :) = [pol_coeff(1) pol_coeff(2) pol_coeff(3) pol_coeff(4)];
     coeff_m(e, :) = [3*pol_coeff(1) 2*pol_coeff(2) pol_coeff(3)];
 end
