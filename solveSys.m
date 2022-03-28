@@ -70,19 +70,3 @@ for i = 1:size(vR, 1)
    u(vR(i), 1) = uR(i,1);
 end
 
-
-% for j = 1:n_dof
-%         for i=1:size(vR, 1)
-%     a = 0;
-%             if j == vR(i,1)
-%             a = 1;
-%             end
-%         end
-%     
-%         if a == 0
-%             F_ext_L(g,1) = Fext(j);
-%             g=g+1;
-%         end    
-% end
- 
-
