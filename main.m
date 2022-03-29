@@ -137,8 +137,31 @@ F_el = computeElementForceVector(n_i, n_nod, Nel, x, l_e_vector, L1, L2, l, M);
 
 %% POSTPROCESS
 
+u_an = zeros(size(u,1)/2,1);
+theta_an = zeros(size(u,1)/2,1);
+Fy_an = zeros(size(u,1)/2,1);
+Mz_an = zeros(size(u,1)/2,1);
+j = 1;
+for i = 1:2:size(u,1)
+    u_an(j) = u(i,1);
+    Fy_an(j) = Fext(i,1);
+    theta_an(j) = u(i+1,1);
+    Mz_an(j) = Fext(i+1,1);
+    j = j+1;
+end
+
+% Error calculus
+%Taking into account the deflection at the wing tip
+err = (u(193,1) - u(193,1))/u(193,1);
+
+
 % Plot analytical solution
-fig = plotBeamsInitialize(L1+L2);
+fig = plotBeamsInitialize(L1+L2,x,u_an,theta_an,Fy_an,Mz_an);
+
+%Von Mises criterion
+sig = y_max*Mz/Iz;
+
+sigma = sqrt(sig^2 + 3*tau^2);
 
 % Number of subdivisions and plots
     nsub = Nel/nel(k);
