@@ -6,7 +6,7 @@ function plotBeams1D(fig,x,Tnod,nsub,pu,pt,Fy,Mz)
 %   x        Nodal coordinates matrix
 %   Tnod     Nodal connectivities matrix
 %   nsub     Number of elements's subdivisions to evaluate displacements
-%            and rotations
+%            and rotations -> arguments for polynomial distributions.
 %   pu       Polynomial coefficients for each elements's displacements
 %   pt       Polynomial coefficients for each elements's rotations 
 
