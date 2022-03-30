@@ -61,14 +61,21 @@ A3 = 2*longitud*t1;
 A =  A1 + A2 + A3;
 
 % Iz - Section inertia
-x_cg = (A2*b + A3*b/2)/A;  
+z_cg = (A2*b + A3*b/2)/A;  
 
 angle_aux = atan((h1/2-h2/2)/b);
 
+% Iz inertia moments
 Izz1 = 1/12*t2*h1^3;
 Izz2 = 1/12*t2*h2^3;
 Izz3 = 2*(1/12*t1*longitud^3*sin(angle_aux)^2 + A3/2*(h1/2-b/2*tan(angle_aux))^2);
 Iz = Izz1 + Izz2 + Izz3;
+
+%Iy inertia moments
+Iyy1 = 1/12*h1*t2^3;
+Iyy2 = 1/12*h2*t2^3;
+Iyy3 = 1/12*t1*longitud^3*cos(angle_aux)^2;
+Iyy = (Iyy1 + A1*z_cg^2) + (Iyy2 + A2*(z_cg-b)^2) + 2*(Iyy3 + A3/2*(z_cg-b/2)^2);
 
 % Compute parameter l:
 % l - Equilibrium parameter
