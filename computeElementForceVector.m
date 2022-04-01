@@ -4,7 +4,7 @@ function F_el = computeElementForceVector(n_i, n_nod, Nel, x, l_e_vector, L1, L2
 
 F_el = zeros(2*n_i, Nel);
 
-% To pick the left side -> i = 1:(Nel-1)
+% To pick the left side -> i = 1:(nel-1)
 for i = 2:n_nod     % Right side
     q_e = l*(0.8-0.2*cos(pi*x(i)/L1));
     lambda_e = 9.81*(M/(4*(L1+L2)) + 3*M*(L1-x(i))/(2*L2^2));
