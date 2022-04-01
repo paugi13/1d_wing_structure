@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------%
 % ASSIGNMENT 03 - (A)
 %-------------------------------------------------------------------------%
-% Date:
+% Date: 
 % Author/s:
 %
 
@@ -32,7 +32,8 @@ M = 35000;
 nel = [3,6, 12, 24, 48, 96];
 
 %%  Essential parameters. 
-% Everything is built so that it works by changing Nel's value. 
+% Everything is built so that it works by changing Nel's value.
+
 Nel = 96; % Number of elements for the "exact" solution
 n_d = 1;    %Problem dimension
 n_ne = 2;   % Nodes in a beam
@@ -77,6 +78,8 @@ Iyy = (Iyy1 + A1*z_cg^2) + (Iyy2 + A2*(z_cg-b)^2) + 2*(Iyy3 + A3/2*(z_cg-b/2)^2)
 aux_M = 1.7863e+04;
 aux_Q = 32/3; %[N]
 l = (aux_M*g)/aux_Q;
+
+u_ext = zeros(size(nel,2),1);
 
 % This plot is empty at first
 fig = plotBeamsInitialize(L1+L2);
@@ -155,23 +158,30 @@ Mz_an(1,1) = Mz(1,1);
     plotBeams1D(fig,x,Tn,nsub,pu,pt,Fy,Mz)
     drawnow;
 
+% Vector acumulating displacement at x = L1 + L2
 
+u_ext(k, 1) = u(2*nel(k)+1,1);
+
+% End of general loop
 end
-
-%%  Postprocessing
-
-% Error calculus
-%Taking into account the deflection at the wing tip
-err = (u(193,1) - u(193,1))/u(193,1);
-    
-%Von Mises criterion
-sig = y_max*Mz/Iz;
-
-sigma = sqrt(sig^2 + 3*tau^2);
-    
-% for k = 1:length(nel)le
-% end
 
 % Add figure legends
 figure(fig)
 legend(strcat('N=',cellstr(string(nel))),'location','northeast');
+
+
+%%  Postprocessing
+% Error calculus
+error_vector = zeros(size(u_ext,1),1);
+
+% Taking into account the deflection at the wing tip
+% The last value is the one for Nel = 96 -> 'Exact solution'
+
+for i = 1:size(u_ext,1)
+   error_vector(i,1) = (u_ext(i,1) - u_ext(length(u_ext)))/u_ext(length(u_ext));
+end
+ 
+%Von Mises criterion
+sig = y_max*Mz/Iz;
+
+sigma = sqrt(sig^2 + 3*tau^2);
