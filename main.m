@@ -6,7 +6,6 @@
 %
 
 clear;
-close all;
 
 %% INPUT DATA
 
@@ -68,7 +67,7 @@ angle_aux = atan((h1/2-h2/2)/b);
 % Iz inertia moments
 Izz1 = 1/12*t2*h1^3;
 Izz2 = 1/12*t2*h2^3;
-Izz3 = 2*(1/12*t1*longitud^3*sin(angle_aux)^2 + A3/2*(h1/2-b/2*tan(angle_aux))^2);
+Izz3 = 2*(1/12*t1*longitud^3*sin(angle_aux)^2 + A3/2*(h1/2-longitud/2*sin(angle_aux))^2);
 Iz = Izz1 + Izz2 + Izz3;
 
 %Iy inertia moments
@@ -79,7 +78,9 @@ Iyy = (Iyy1 + A1*z_cg^2) + (Iyy2 + A2*(z_cg-b)^2) + 2*(Iyy3 + A3/2*(z_cg-b/2)^2)
 
 % Compute parameter l:
 % l - Equilibrium parameter
-aux_M = 21875; %[kg]
+% aux_M = 21875; %[kg]
+
+aux_M = 1.7863e+04;
 aux_Q = 32/3; %[N]
 l = (aux_M*g)/aux_Q;
 
@@ -151,11 +152,18 @@ Mz_an = zeros(size(u,1)/2,1);
 j = 1;
 for i = 1:2:size(u,1)
     u_an(j) = u(i,1);
-    Fy_an(j) = Fext(i,1);
     theta_an(j) = u(i+1,1);
-    Mz_an(j) = Fext(i+1,1);
     j = j+1;
 end
+
+
+Fy_an = zeros(Nel+1,1);
+Mz_an = zeros(Nel+1,1);
+Fy_an(2:Nel+1,1) = Fy(:,1);
+Mz_an(2:Nel+1,1) = Mz(:,1);
+Fy_an(1,1) = Fy(1,1);
+Mz_an(1,1) = Mz(1,1);
+
 
 % Error calculus
 %Taking into account the deflection at the wing tip
@@ -165,17 +173,21 @@ err = (u(193,1) - u(193,1))/u(193,1);
 % Plot analytical solution
 fig = plotBeamsInitialize(L1+L2,x,u_an,theta_an,Fy_an,Mz_an);
 
+
+for k = 1:length(nel)
+% Number of subdivisions and plots
+    nsub = Nel/nel(k);
+    plotBeams1D(fig,x,Tn,nsub,pu,pt,Fy,Mz)
+    drawnow;
+end
+
+    
 %Von Mises criterion
 sig = y_max*Mz/Iz;
 
 sigma = sqrt(sig^2 + 3*tau^2);
-
-% Number of subdivisions and plots
-    nsub = Nel/nel(k);
-    plotBeams1D(fig,x,Tnod,nsub,pu,pt,Fy,Mz)
-    drawnow;
     
-% for k = 1:length(nel)
+% for k = 1:length(nel)le
 % end
 
 % Add figure legends
