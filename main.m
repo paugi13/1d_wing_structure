@@ -178,9 +178,15 @@ error_vector = zeros(size(u_ext,1),1);
 % The last value is the one for Nel = 96 -> 'Exact solution'
 
 for i = 1:size(u_ext,1)
-   error_vector(i,1) = (u_ext(i,1) - u_ext(length(u_ext)))/u_ext(length(u_ext));
+   error_vector(i,1) = abs((u_ext(i,1) - u_ext(length(u_ext)))/u_ext(length(u_ext)));
 end
- 
+
+figure
+semilogx(nel, error_vector);
+xlabel('log_{10}(n_{el})');
+ylabel('Relative error');
+title('Relative error along the number of elements');
+
 %Von Mises criterion
 sig = y_max*Mz/Iz;
 
