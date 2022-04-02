@@ -15,5 +15,9 @@ for i = 2:n_nod     % Right side
     q_e_res = q_e - lambda_e;
     F_el(:,i-1) = q_e_res*l_e_vector(i-1,1)/2*[1; l_e_vector(i-1,1)/6; 1;...
         -l_e_vector(i-1,1)/6];
+    if x(i) == 5
+        F_el(1,i-1) = F_el(1,i-1) - 2550*9.81;
+        F_el(3,i-1) = F_el(3,i-1) - 2550*9.81;
+    end
 end
 
