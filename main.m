@@ -187,7 +187,18 @@ xlabel('log_{10}(n_{el})');
 ylabel('Relative error');
 title('Relative error along the number of elements');
 
-%Von Mises criterion
-sig = y_max*Mz/Iz;
+% Von Mises criterion
 
-sigma = sqrt(sig^2 + 3*tau^2);
+% Largest moment at wing's root. 
+% Axial stress
+sig = (h1/2)*max(Mz)/Iz;
+
+% Although the largest shear force is not at the root, its effect is not as
+% big as the moment's one. We'll take the root's section as the most
+% affected one. 
+
+% Shear stress.
+
+A_in = b*((h1-h2)/2) + b*h2;
+
+%sigma = sqrt(sig^2 + 3*tau^2);
