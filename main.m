@@ -59,18 +59,18 @@ A =  A1 + A2 + A3;
 % Iz - Section inertia
 z_cg = (A2*b + A3*b/2)/A;  
 
-angle_aux = atan((h1/2-h2/2)/b);
+theta = atan((h1/2-h2/2)/b);
 
-% Iz inertia moments
+% Iz inertia moments -> z is the horizontal axis.
 Izz1 = 1/12*t2*h1^3;
 Izz2 = 1/12*t2*h2^3;
-Izz3 = 2*(1/12*t1*longitud^3*sin(angle_aux)^2 + A3/2*(h1/2-longitud/2*sin(angle_aux))^2);
+Izz3 = 2*(1/12*t1*longitud^3*sin(theta)^2 + A3/2*(h1/2-longitud/2*sin(theta))^2);
 Iz = Izz1 + Izz2 + Izz3;
 
-%Iy inertia moments
+%Iy inertia moments -> Vertical axis.
 Iyy1 = 1/12*h1*t2^3;
 Iyy2 = 1/12*h2*t2^3;
-Iyy3 = 1/12*t1*longitud^3*cos(angle_aux)^2;
+Iyy3 = 1/12*t1*longitud^3*cos(theta)^2;
 Iyy = (Iyy1 + A1*z_cg^2) + (Iyy2 + A2*(z_cg-b)^2) + 2*(Iyy3 + A3/2*(z_cg-b/2)^2);
 
 % Compute parameter l:
@@ -159,7 +159,7 @@ Mz_an(1,1) = Mz(1,1);
     drawnow;
 
 % Vector acumulating displacement at x = L1 + L2
-
+% 2*nel(k)+2 contains the rotation of the last node
 u_ext(k, 1) = u(2*nel(k)+1,1);
 
 % End of general loop
@@ -187,18 +187,59 @@ xlabel('log_{10}(n_{el})');
 ylabel('Relative error');
 title('Relative error along the number of elements');
 
-% Von Mises criterion
+%% VON MISES CRITERION
+% Bending moment in z axis. 
+% Axial stress -> h1/2 is the maximum value of y. 
+sig_max = (h1/2)*Mz(1,1)/Iz;
 
-% Largest moment at wing's root. 
-% Axial stress
-sig = (h1/2)*max(Mz)/Iz;
+Sy = Fy(1,1);
+const = Sy/Iz;
 
-% Although the largest shear force is not at the root, its effect is not as
-% big as the moment's one. We'll take the root's section as the most
-% affected one. 
+% Shear stress
+% Calculate Qs0
+% Normal distance from x_cg to upper and lower bars.
+u1 = 1/(sqrt(z_cg^2 + (h1/2)^2)) * [z_cg, h1/2];
+u2 = [cos(theta) sin(theta)];
+mu = acos(dot(u1,u2));
+dn = sqrt(z_cg^2 + (h1/2)^2)*sin(mu);
 
-% Shear stress.
+% Qopen definite integrals
+q01f = @(x) -const*t2*x;
+q12f = @(x) -const*t1*(h2/2+x*sin(theta));
+q23f = @(x) -const*t2*(h1/2-x);
+q34f = @(x) -const*t1*(-h1/2+x*sin(theta));
+q40f = @(x) -const*t2*(-h2/2+x);
 
+q1op = integral(q01f, 0, h2/2);
+q2op = q1op + integral(q12f, 0, longitud);
+q3op = q2op + integral(q23f, 0, h1);
+q4op = q3op + integral(q34f, 0, longitud);
+
+% Qopen shear flow moment differentials in indefinite integrals (function_handle)
+syms x
+q01op_m_ind = matlabFunction((b-z_cg)*int(const*t2*x));
+q12op_m_ind = matlabFunction(dn*(int(const*t1*(h2/2+x*sin(theta)))+q1op));
+q23op_m_ind = matlabFunction(-z_cg*(int(const*t2*(h1/2-x))+q2op));
+q34op_m_ind = matlabFunction(dn*(int(const*t1*(-h1/2+x*sin(theta)))+q3op));
+q40op_m_ind = matlabFunction((b-z_cg)*(int(const*t2*(-h2/2+x))+q4op));
+
+% Shear flow moment definite integrals
+q01op_m = integral(q01op_m_ind, 0, h2/2);
+q12op_m = integral(q12op_m_ind, 0, longitud);
+q23op_m = integral(q23op_m_ind, 0, h1);
+q34op_m = integral(q34op_m_ind, 0, longitud);
+q40op_m = integral(q40op_m_ind, 0, h2/2);
+
+% Final calculus.
+M_total = q01op_m + q12op_m + q23op_m + q34op_m +q40op_m;
 A_in = b*((h1-h2)/2) + b*h2;
+Qs0 = M_total/(2*A_in);
 
-%sigma = sqrt(sig^2 + 3*tau^2);
+q1op = q1op + Qs0;
+q2op = q2op + Qs0;
+q3op = q3op + Qs0;
+q4op = q4op + Qs0;
+
+tau_max = q2op/t1;
+
+sigma_eq = sqrt(sig_max^2 + 3*tau_max^2);
