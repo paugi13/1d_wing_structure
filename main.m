@@ -195,6 +195,12 @@ sig_max = (h1/2)*Mz(1,1)/Iz;
 Sy = Fy(1,1);
 const = Sy/Iz;
 
+% Same calculus at section with maximum bending moment.
+% 9th moment and force.
+max_m = max(Mz);
+sig_max = (h1/2)*max_m(2)/Iz;
+Sy = Fy(9,1);
+
 % Shear stress
 % Calculate Qs0
 % Normal distance from x_cg to upper and lower bars.
@@ -204,6 +210,7 @@ mu = acos(dot(u1,u2));
 dn = sqrt(z_cg^2 + (h1/2)^2)*sin(mu);
 
 % Qopen definite integrals
+% Most solicitated position expected at 2-3. 
 q01f = @(x) -const*t2*x;
 q12f = @(x) -const*t1*(h2/2+x*sin(theta));
 q23f = @(x) -const*t2*(h1/2-x);
@@ -223,7 +230,7 @@ q23op_m_ind = matlabFunction(-z_cg*(int(const*t2*(h1/2-x))+q2op));
 q34op_m_ind = matlabFunction(dn*(int(const*t1*(-h1/2+x*sin(theta)))+q3op));
 q40op_m_ind = matlabFunction((b-z_cg)*(int(const*t2*(-h2/2+x))+q4op));
 
-% Shear flow moment definite integrals
+% Shear flow (open) moment definite integrals
 q01op_m = integral(q01op_m_ind, 0, h2/2);
 q12op_m = integral(q12op_m_ind, 0, longitud);
 q23op_m = integral(q23op_m_ind, 0, h1);
@@ -243,3 +250,7 @@ q4op = q4op + Qs0;
 tau_max = q2op/t1;
 
 sigma_eq = sqrt(sig_max^2 + 3*tau_max^2);
+
+
+
+
