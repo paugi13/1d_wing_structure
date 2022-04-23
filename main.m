@@ -75,7 +75,7 @@ Iyy = (Iyy1 + A1*z_cg^2) + (Iyy2 + A2*(z_cg-b)^2) + 2*(Iyy3 + A3/2*(z_cg-b/2)^2)
 
 % Compute parameter l:
 % l - Equilibrium parameter
-aux_M = 1.7863e+04;
+aux_M = (1.7863e+04);
 aux_Q = 32/3; %[N]
 l = (aux_M*g)/aux_Q;
 
@@ -190,16 +190,16 @@ title('Relative error along the number of elements');
 %% VON MISES CRITERION
 % Bending moment in z axis. 
 % Axial stress -> h1/2 is the maximum value of y. 
-sig_max = (h1/2)*Mz(1,1)/Iz;
-
-Sy = Fy(1,1);
-const = Sy/Iz;
+% sig_max = (h1/2)*Mz(1,1)/Iz;
+% Sy = Fy(1,1);
+% const = Sy/Iz;
 
 % Same calculus at section with maximum bending moment.
 % 9th moment and force.
 max_m = max(Mz);
 sig_max = (h1/2)*max_m(2)/Iz;
 Sy = Fy(9,1);
+const = Sy/Iz;
 
 % Shear stress
 % Calculate Qs0
@@ -224,11 +224,17 @@ q4op = q3op + integral(q34f, 0, longitud);
 
 % Qopen shear flow moment differentials in indefinite integrals (function_handle)
 syms x
-q01op_m_ind = matlabFunction((b-z_cg)*int(const*t2*x));
-q12op_m_ind = matlabFunction(dn*(int(const*t1*(h2/2+x*sin(theta)))+q1op));
-q23op_m_ind = matlabFunction(-z_cg*(int(const*t2*(h1/2-x))+q2op));
-q34op_m_ind = matlabFunction(dn*(int(const*t1*(-h1/2+x*sin(theta)))+q3op));
-q40op_m_ind = matlabFunction((b-z_cg)*(int(const*t2*(-h2/2+x))+q4op));
+q01op_m_ind = matlabFunction(-(b-z_cg)*int(-const*t2*x));
+q12op_m_ind = matlabFunction(-dn*(int(-const*t1*(h2/2+x*sin(theta)))+q1op));
+q23op_m_ind = matlabFunction(-(-z_cg)*(int(-const*t2*(h1/2-x))+q2op));
+q34op_m_ind = matlabFunction(-dn*(int(-const*t1*(-h1/2+x*sin(theta)))+q3op));
+q40op_m_ind = matlabFunction(-(b-z_cg)*(int(-const*t2*(-h2/2+x))+q4op));
+
+% q01op_m_ind = matlabFunction((b-z_cg)*int(const*t2*x));
+% q12op_m_ind = matlabFunction(dn*(int(const*t1*(h2/2+x*sin(theta)))+q1op));
+% q23op_m_ind = matlabFunction(-z_cg*(int(const*t2*(h1/2-x))+q2op));
+% q34op_m_ind = matlabFunction(dn*(int(const*t1*(-h1/2+x*sin(theta)))+q3op));
+% q40op_m_ind = matlabFunction((b-z_cg)*(int(const*t2*(-h2/2+x))+q4op));
 
 % Shear flow (open) moment definite integrals
 q01op_m = integral(q01op_m_ind, 0, h2/2);
@@ -251,6 +257,9 @@ tau_max = q2op/t1;
 
 sigma_eq = sqrt(sig_max^2 + 3*tau_max^2);
 
+
+% Root = 2.5629e+08
+% Max Bending = 2.7931e+08 -> Max
 
 
 
