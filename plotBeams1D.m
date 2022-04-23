@@ -24,7 +24,26 @@ for e = 1:nel
     theta_el(:,e) = polyval(pt(e,:),0:le/nsub:le);
 end    
 
-figure(fig)
+if nsub == 1
+    figure(fig)
+% Plot beam deflection
+subplot(2,2,1)
+plot(x_el(:),u_el(:), 'black','linewidth', 1.5);
+
+% Plot beam section rotation
+subplot(2,2,2)
+plot(x_el(:),theta_el(:), 'black','linewidth', 1.5);
+
+% Plot beam internal shear force
+subplot(2,2,3)
+plot(xel(:),Fy_el(:), 'black','linewidth', 1.5);
+
+% Plot beam internal bending moment
+subplot(2,2,4)
+plot(xel(:),Mz_el(:), 'black','linewidth', 1.5);
+
+else
+    figure(fig)
 % Plot beam deflection
 subplot(2,2,1)
 plot(x_el(:),u_el(:));
@@ -40,5 +59,7 @@ plot(xel(:),Fy_el(:));
 % Plot beam internal bending moment
 subplot(2,2,4)
 plot(xel(:),Mz_el(:));
+
+end
 
 end

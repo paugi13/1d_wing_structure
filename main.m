@@ -190,15 +190,8 @@ title('Relative error along the number of elements');
 %% VON MISES CRITERION
 % Bending moment in z axis. 
 % Axial stress -> h1/2 is the maximum value of y. 
-% sig_max = (h1/2)*Mz(1,1)/Iz;
-% Sy = Fy(1,1);
-% const = Sy/Iz;
-
-% Same calculus at section with maximum bending moment.
-% 9th moment and force.
-max_m = max(Mz);
-sig_max = (h1/2)*max_m(2)/Iz;
-Sy = Fy(9,1);
+sig_max = (h1/2)*Mz(1,1)/Iz;
+Sy = Fy(1,1);
 const = Sy/Iz;
 
 % Shear stress
@@ -258,8 +251,7 @@ tau_max = q2op/t1;
 sigma_eq = sqrt(sig_max^2 + 3*tau_max^2);
 
 
-% Root = 2.5629e+08
-% Max Bending = 2.7931e+08 -> Max
+% Sigma_eq (root) = 4.8281e+08
 
 
 
